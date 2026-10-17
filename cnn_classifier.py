@@ -7,8 +7,16 @@ import time
 import torch.nn.functional as F
 
 # Load classes
-with open("cnn/classes.json", "r") as f:
+
+import os
+import json
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+CLASSES_PATH = os.path.join(BASE_DIR, "classes.json")
+
+with open(CLASSES_PATH, "r", encoding="utf-8") as f:
     classes = json.load(f)
+
 
 # Load model
 model = models.mobilenet_v2(weights=None)
