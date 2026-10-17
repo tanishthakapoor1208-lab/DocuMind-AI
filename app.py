@@ -15,13 +15,13 @@ app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # Tesseract
+# Tesseract configuration
 if os.name == "nt":
     pytesseract.pytesseract.tesseract_cmd = (
         r"C:\Program Files\Tesseract-OCR\tesseract.exe"
     )
 else:
-    pytesseract.pytesseract.tesseract_cmd = "/usr/bin/tesseract""
-
+    pytesseract.pytesseract.tesseract_cmd = "/usr/bin/tesseract"
 # EasyOCR
 reader = easyocr.Reader(['en'])
 
