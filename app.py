@@ -23,12 +23,21 @@ if os.name == "nt":
 else:
     pytesseract.pytesseract.tesseract_cmd = "/usr/bin/tesseract"
 # EasyOCR
-reader = easyocr.Reader(['en'])
+reader = None
+
+def get_reader():
+    global reader
+
+    if reader is None:
+        reader = easyocr.Reader(['en'], gpu=False)
+
+    return reader
 
 # ---------------- OCR ----------------
 def extract_text(image_path):
     try:
-        result = reader.readtext(image_path, detail=0)
+        ocr_reader = get_reader()
+        result = ocr_reader.readtext(image_path, detail=0)
         easy_text = "\n".join(result)
 
         img = Image.open(image_path)
