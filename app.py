@@ -6,7 +6,7 @@ import pytesseract
 import easyocr
 import re
 
-from cnn.cnn_classifier import predict_image
+from cnn_classifier import predict_image
 
 app = Flask(__name__)
 
