@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DocuMind AI Pro</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0d0d0f;--surface:#16161a;--surface2:#1e1e24;--border:#2a2a35;
+  --accent:#e8ff4d;--accent2:#7c6aff;--text:#f0eee8;--muted:#6e6c7a;
+  --success:#4dffb0;--warn:#ffb84d;--danger:#ff6b6b;
+}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden}
+.app{max-width:960px;margin:0 auto;padding:32px 24px}
+
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:48px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{width:32px;height:32px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center}
+.logo-icon svg{width:18px;height:18px;fill:#0d0d0f}
+.logo-name{font-family:'Syne',sans-serif;font-weight:800;font-size:18px;letter-spacing:-0.02em}
+.logo-name span{color:var(--accent)}
+.badge{font-family:'DM Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);padding:4px 10px;border-radius:20px;color:var(--muted)}
+
+.hero{margin-bottom:40px}
+.hero-eyebrow{font-family:'DM Mono',monospace;font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:12px}
+.hero h1{font-family:'Syne',sans-serif;font-weight:800;font-size:42px;line-height:1.05;letter-spacing:-0.03em;margin-bottom:12px}
+.hero h1 span{color:var(--accent2)}
+.hero p{font-size:15px;color:var(--muted);max-width:520px;line-height:1.65}
+
+.upload-zone{border:1.5px dashed var(--border);border-radius:16px;background:var(--surface);padding:48px 40px;text-align:center;cursor:pointer;transition:all .25s ease;position:relative;overflow:hidden;margin-bottom:32px}
+.upload-zone:hover,.upload-zone.drag-over{border-color:var(--accent2);background:rgba(124,106,255,.08)}
+.upload-zone.drag-over{border-style:solid}
+.upload-icon{width:56px;height:56px;border-radius:12px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;margin:0 auto 20px}
+.upload-icon svg{width:26px;height:26px;stroke:var(--accent2);fill:none;stroke-width:1.5}
+.upload-zone h3{font-family:'Syne',sans-serif;font-weight:700;font-size:18px;margin-bottom:8px}
+.upload-zone p{font-size:13px;color:var(--muted);margin-bottom:24px}
+.file-types{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:20px}
+.file-type{font-family:'DM Mono',monospace;font-size:11px;padding:4px 10px;border-radius:6px;background:var(--surface2);border:1px solid var(--border);color:var(--muted)}
+.btn-upload{background:var(--accent);color:#0d0d0f;border:none;padding:12px 28px;border-radius:8px;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;cursor:pointer;transition:all .2s}
+.btn-upload:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(232,255,77,.2)}
+#file-input{display:none}
+
+.selected-file{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 20px;display:flex;align-items:center;gap:16px;margin-bottom:24px}
+.file-icon{width:40px;height:40px;border-radius:8px;background:rgba(124,106,255,.15);border:1px solid rgba(124,106,255,.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'DM Mono',monospace;font-size:11px;color:var(--accent2);font-weight:500}
+.file-info{flex:1;min-width:0}
+.file-name{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px}
+.file-size{font-size:12px;color:var(--muted)}
+.btn-analyze{background:var(--accent2);color:#fff;border:none;padding:12px 32px;border-radius:8px;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:8px;flex-shrink:0}
+.btn-analyze:hover{background:#9480ff;transform:translateY(-1px)}
+.btn-analyze:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn-analyze svg{width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2}
+
+.progress-bar{height:3px;background:var(--border);border-radius:99px;margin-bottom:32px;overflow:hidden}
+.progress-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent2),var(--accent));width:0%;transition:width .4s ease}
+
+.section-label{font-family:'DM Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+
+.metrics-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:28px}
+.metric-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px}
+.metric-label{font-size:11px;color:var(--muted);margin-bottom:6px;font-family:'DM Mono',monospace}
+.metric-value{font-family:'Syne',sans-serif;font-weight:700;font-size:22px;letter-spacing:-0.02em}
+.metric-value.green{color:var(--success)}
+.metric-value.purple{color:var(--accent2)}
+.metric-value.yellow{color:var(--accent)}
+
+.doc-type-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:16px;display:flex;align-items:center;gap:16px}
+.doc-type-icon{width:44px;height:44px;border-radius:10px;background:rgba(77,255,176,.12);border:1px solid rgba(77,255,176,.25);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.doc-type-name{font-family:'Syne',sans-serif;font-weight:700;font-size:17px;margin-bottom:3px}
+.doc-type-conf{font-size:12px;color:var(--muted)}
+.conf-bar{height:4px;background:var(--border);border-radius:99px;margin-top:8px;overflow:hidden}
+.conf-fill{height:100%;background:var(--success);border-radius:99px}
+
+.fields-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.field-row{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 16px}
+.field-key{font-family:'DM Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:4px}
+.field-val{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.field-val.found{color:var(--text)}
+.field-val.missing{color:var(--border)}
+
+.text-panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:16px}
+.text-content{font-family:'DM Mono',monospace;font-size:12px;line-height:1.8;color:#b0adb8;max-height:220px;overflow-y:auto;white-space:pre-wrap}
+.text-content::-webkit-scrollbar{width:4px}
+.text-content::-webkit-scrollbar-track{background:transparent}
+.text-content::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px}
+
+.entities-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:28px}
+.entity-tag{font-size:12px;padding:5px 12px;border-radius:6px;font-family:'DM Mono',monospace;border:1px solid}
+.entity-tag.date{background:rgba(77,255,176,.1);border-color:rgba(77,255,176,.3);color:var(--success)}
+.entity-tag.money{background:rgba(232,255,77,.1);border-color:rgba(232,255,77,.3);color:var(--accent)}
+.entity-tag.org{background:rgba(124,106,255,.1);border-color:rgba(124,106,255,.3);color:var(--accent2)}
+.entity-tag.person{background:rgba(255,107,107,.1);border-color:rgba(255,107,107,.3);color:var(--danger)}
+
+.btn-export{background:var(--surface);border:1px solid var(--border);padding:10px 20px;border-radius:8px;font-family:'Syne',sans-serif;font-weight:600;font-size:13px;color:var(--text);cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:8px}
+.btn-export:hover{background:var(--surface2);border-color:var(--muted)}
+.btn-new{background:transparent;border:1px solid var(--accent2);padding:10px 20px;border-radius:8px;font-family:'Syne',sans-serif;font-weight:600;font-size:13px;color:var(--accent2);cursor:pointer;transition:all .2s}
+.btn-new:hover{background:rgba(124,106,255,.1)}
+.actions-row{display:flex;gap:10px;flex-wrap:wrap}
+
+.loader-overlay{position:absolute;inset:0;background:rgba(13,13,15,.8);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px;z-index:10;border-radius:16px}
+.loader-overlay.active{display:flex}
+.spinner{width:32px;height:32px;border:2px solid var(--border);border-top-color:var(--accent2);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loader-text{font-family:'DM Mono',monospace;font-size:12px;color:var(--muted)}
+
+#results-section{display:none}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header class="header">
+    <div class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 20 20">
+          <path d="M4 2h8l4 4v12H4V2z"/>
+          <path d="M12 2v4h4" stroke="#0d0d0f" stroke-width="1.5" fill="none" stroke-linejoin="round"/>
+          <line x1="7" y1="9" x2="13" y2="9" stroke="#0d0d0f" stroke-width="1.5"/>
+          <line x1="7" y1="12" x2="13" y2="12" stroke="#0d0d0f" stroke-width="1.5"/>
+        </svg>
+      </div>
+      <span class="logo-name">Docu<span>Mind</span></span>
+    </div>
+    <span class="badge">AI Pro v2.0</span>
+  </header>
+
+  <div class="hero">
+    <div class="hero-eyebrow">Document Intelligence Platform</div>
+    <h1>Extract. Classify.<br><span>Understand.</span></h1>
+    <p>Upload any document and get instant AI-powered classification, OCR, entity extraction, and structured field analysis.</p>
+  </div>
+
+  <!-- UPLOAD SECTION -->
+  <div id="upload-section">
+    <div class="upload-zone" id="upload-zone">
+      <div class="loader-overlay" id="loader">
+        <div class="spinner"></div>
+        <span class="loader-text" id="loader-msg">Analyzing document...</span>
+      </div>
+      <div class="upload-icon">
+        <svg viewBox="0 0 24 24">
+          <polyline points="16 16 12 12 8 16"/>
+          <line x1="12" y1="12" x2="12" y2="21"/>
+          <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/>
+        </svg>
+      </div>
+      <h3>Drop your document here</h3>
+      <p>Drag and drop or click to browse your files</p>
+      <div class="file-types">
+        <span class="file-type">PDF</span>
+        <span class="file-type">DOCX</span>
+        <span class="file-type">PNG</span>
+        <span class="file-type">JPG</span>
+        <span class="file-type">TXT</span>
+      </div>
+      <button class="btn-upload" onclick="document.getElementById('file-input').click()">Browse Files</button>
+      <input type="file" id="file-input" accept=".pdf,.docx,.doc,.png,.jpg,.jpeg,.txt">
+    </div>
+
+    <div class="selected-file" id="selected-file" style="display:none">
+      <div class="file-icon" id="file-ext">PDF</div>
+      <div class="file-info">
+        <div class="file-name" id="file-name-display">document.pdf</div>
+        <div class="file-size" id="file-size-display">2.4 MB</div>
+      </div>
+      <!-- Single onclick, no duplication -->
+      <button class="btn-analyze" id="analyze-btn" onclick="runAnalysis()">
+        <svg viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        Analyze Document
+      </button>
+    </div>
+
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>
+  </div>
+
+  <!-- RESULTS SECTION -->
+  <div id="results-section">
+    <div class="section-label">Analysis Summary</div>
+    <div class="metrics-row">
+      <div class="metric-card">
+        <div class="metric-label">Confidence</div>
+        <div class="metric-value green" id="r-confidence">—</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Fields Found</div>
+        <div class="metric-value purple" id="r-fields">—</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Processing</div>
+        <div class="metric-value yellow" id="r-time">—</div>
+      </div>
+    </div>
+
+    <div class="section-label">Document Classification</div>
+    <div class="doc-type-card">
+      <div class="doc-type-icon" id="r-doc-icon">📄</div>
+      <div style="flex:1">
+        <div class="doc-type-name" id="r-doc-type">—</div>
+        <div class="doc-type-conf" id="r-doc-conf">Confidence: —</div>
+        <div class="conf-bar">
+          <div class="conf-fill" id="r-conf-fill" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
+
+
+
+    <div class="section-label">Raw Extracted Text</div>
+    <div class="text-panel">
+      <div class="text-content" id="r-text">No text extracted.</div>
+    </div>
+
+    <!-- onclick handlers only here, no JS reassignment -->
+    <div class="actions-row">
+      <button class="btn-export" onclick="exportJSON()">↓ Export JSON</button>
+      <button class="btn-export" onclick="exportCSV()">↓ Export CSV</button>
+      <button class="btn-new" onclick="resetApp()">← Analyze New Document</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── DOM refs ─────────────────────────────────────────────
+const zone = document.getElementById('upload-zone');
+const fileInput = document.getElementById('file-input');
+const selectedFile = document.getElementById('selected-file');
+const progressFill = document.getElementById('progress-fill');
+const resultsSection = document.getElementById('results-section');
+const uploadSection = document.getElementById('upload-section');
+const loader = document.getElementById('loader');
+const loaderMsg = document.getElementById('loader-msg');
+
+// ── Drag & Drop ──────────────────────────────────────────
+zone.addEventListener('dragover', e => {
+  e.preventDefault();
+  zone.classList.add('drag-over');
+});
+
+zone.addEventListener('dragleave', () => {
+  zone.classList.remove('drag-over');
+});
+
+zone.addEventListener('drop', e => {
+  e.preventDefault();
+  zone.classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (file) handleFile(file);
+});
+
+fileInput.addEventListener('change', e => {
+  if (e.target.files[0]) handleFile(e.target.files[0]);
+});
+
+// Click anywhere to upload
+zone.addEventListener('click', e => {
+  if (e.target.classList.contains('btn-upload') || e.target.closest('.btn-upload')) return;
+  fileInput.click();
+});
+
+// ── Handle file ──────────────────────────────────────────
+function handleFile(file) {
+  const ext = file.name.split('.').pop().toUpperCase();
+
+  document.getElementById('file-ext').textContent = ext;
+  document.getElementById('file-name-display').textContent = file.name;
+  document.getElementById('file-size-display').textContent =
+    (file.size / 1024 / 1024).toFixed(2) + ' MB';
+
+  selectedFile.style.display = 'flex';
+  progressFill.style.width = '20%';
+}
+
+// ── Analysis ─────────────────────────────────────────────
+async function runAnalysis() {
+  const file = fileInput.files[0];
+
+  if (!file) {
+    alert("Please select a file first");
+    return;
+  }
+
+  const btn = document.getElementById('analyze-btn');
+  btn.disabled = true;
+
+  loader.classList.add('active');
+  loaderMsg.textContent = "Processing with AI...";
+  progressFill.style.width = "50%";
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  try {
+    const response = await fetch("/upload", {
+      method: "POST",
+      body: formData
+    });
+
+    const data = await response.json();
+
+    // Save for export
+    window.lastResult = data;
+
+    progressFill.style.width = "100%";
+    loader.classList.remove('active');
+    btn.disabled = false;
+
+    // Metrics
+    const confidence = data.confidence || 0;
+
+    document.getElementById('r-confidence').textContent = confidence + "%";
+    document.getElementById('r-fields').textContent = "—"; // removed fields
+    document.getElementById('r-time').textContent = data.time;
+
+    document.getElementById('r-conf-fill').style.width = confidence + "%";
+    document.getElementById('r-doc-conf').textContent =
+      "Confidence: " + confidence + "%";
+
+    showResults(data);
+
+  } catch (err) {
+    console.error(err);
+    alert("Error processing file");
+    loader.classList.remove('active');
+    btn.disabled = false;
+  }
+}
+
+// ── Show results ─────────────────────────────────────────
+function showResults(data) {
+  uploadSection.style.display = 'none';
+  resultsSection.style.display = 'block';
+
+  document.getElementById('r-doc-type').textContent =
+    data.document_type || "Unknown";
+
+  document.getElementById('r-text').textContent =
+    data.text || "No text extracted.";
+}
+
+// ── Reset ────────────────────────────────────────────────
+function resetApp() {
+  uploadSection.style.display = 'block';
+  resultsSection.style.display = 'none';
+
+  fileInput.value = "";
+  selectedFile.style.display = "none";
+  progressFill.style.width = "0%";
+
+  window.lastResult = null;
+}
+
+// ── Export JSON ──────────────────────────────────────────
+function exportJSON() {
+  if (!window.lastResult) {
+    alert("No data to export");
+    return;
+  }
+
+  const blob = new Blob(
+    [JSON.stringify(window.lastResult, null, 2)],
+    { type: "application/json" }
+  );
+
+  triggerDownload(blob, "result.json");
+}
+
+// ── Export CSV ───────────────────────────────────────────
+function exportCSV() {
+  if (!window.lastResult) {
+    alert("No data to export");
+    return;
+  }
+
+  let csv = "Key,Value\n";
+
+  Object.entries(window.lastResult).forEach(([key, value]) => {
+    if (typeof value === "object") {
+      value = JSON.stringify(value);
+    }
+    csv += `${key},"${value}"\n`;
+  });
+
+  const blob = new Blob([csv], { type: "text/csv" });
+  triggerDownload(blob, "result.csv");
+}
+
+// ── Download helper ──────────────────────────────────────
+function triggerDownload(blob, filename) {
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+
+  URL.revokeObjectURL(url);
+}
+</script>
+</body>
+</html>
