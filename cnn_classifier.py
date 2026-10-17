@@ -22,7 +22,8 @@ with open(CLASSES_PATH, "r", encoding="utf-8") as f:
 model = models.mobilenet_v2(weights=None)
 model.classifier[1] = nn.Linear(model.last_channel, len(classes))
 
-model.load_state_dict(torch.load("cnn/cnn_model.pth", map_location="cpu"))
+MODEL_PATH = os.path.join(BASE_DIR, "cnn_model.pth")
+model.load_state_dict(torch.load(MODEL_PATH, map_location="cpu"))
 model.eval()
 
 # Transform
