@@ -20,4 +20,4 @@ COPY . .
 
 RUN mkdir -p uploads
 
-CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:${PORT:-10000} app:app"]
+CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:${PORT:-10000} --timeout 180 app:app"]
