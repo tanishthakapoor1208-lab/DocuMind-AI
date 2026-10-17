@@ -1,0 +1,7 @@
+Flask
+Pillow
+pytesseract
+easyocr
+torch
+torchvision
+gunicorn
